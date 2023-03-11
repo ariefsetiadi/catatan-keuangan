@@ -140,6 +140,22 @@
 							</div>
 						</div>
 					</div>
+
+					<!-- Delete Confirmation -->
+					<div class="modal fade" data-backdrop="static" data-keyboard="false" id="confirmModal" tabindex="-1">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-body">
+									<div class="text-center my-3">
+										<img src="{{ asset('asset/img/confirm-delete.svg') }}">
+										<h5 class="my-3" style="color: #1f1f1f">Hapus Transaksi Ini?</h5>
+										<button type="button" class="btn btn-secondary mr-1" id="btnNo" data-dismiss="modal"></button>
+										<button type="submit" class="btn btn-danger ml-1" id="btnYes"></button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -235,6 +251,29 @@
 					$('#transactionModal').modal("show");
 				});
 
+				// Form modal Edit
+				$(document).on('click', '.btnEdit', function () {
+					var url = '{{ route("transaction.show", ":id") }}';
+					transaction_id = $(this).attr("id");
+
+					$.ajax({
+						url: url.replace(":id", transaction_id),
+						dataType: "json",
+						success: function (html) {
+							$('#modalTitle').text("Edit Transaksi");
+							$('#btnSave').text("Update");
+							$('#transactionForm').trigger("reset");
+							$('#transactionModal').modal("show");
+
+							$('#transaction_id').val(html.data.id);
+							$('#date').val(html.data.date);
+							$('#type').val(html.data.type);
+							$('#title').val(html.data.title);
+							$('#total').val(html.data.total);
+						}
+					});
+				});
+
 				// Submit data
 				$('#transactionForm').on('submit', function (e) {
 					e.preventDefault();
@@ -288,6 +327,93 @@
 							}
 						});
 					}
+
+					if ($('#btnSave').text() == 'Update') {
+						$('#date_error').text();
+						$('#type_error').text();
+						$('#title_error').text();
+						$('#total_error').text();
+
+						$.ajax({
+							url: "{{ route('transaction.update') }}",
+							method: "POST",
+							data: new FormData(this),
+							contentType: false,
+							cache: false,
+							processData: false,
+							dataType:"json",
+
+							beforeSend: function() {
+								$('#btnSave').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Proses...');
+							},
+
+							success: function(res) {
+								setTimeout(function() {
+									$('#transactionForm')[0].reset();
+									$('#transactionModal').modal('hide');
+									$('#transactionTable').DataTable().ajax.reload();
+								});
+
+								toastr.options =
+								{
+									"closeButton" : true,
+									"progressBar" : false,
+									"preventDuplicates": true,
+									"timeOut": "3000",
+									"positionClass": "toast-top-center"
+								}
+								toastr.success(res.messages);
+							},
+
+							error: function(reject) {
+								setTimeout(function() {
+									$('#btnSave').text('Simpan');
+									var response = $.parseJSON(reject.responseText);
+									$.each(response.errors, function (key, val) {
+										$('#' + key + "_error").text(val[0]);
+										$('#' + key).addClass('is-invalid');
+									});
+								});
+							}
+						});
+					}
+				});
+
+				// Confirmation Delete
+				var url	=	'{{ route("transaction.delete", ":id") }}';
+
+				$(document).on('click', '.btnDelete', function () {
+					transaction_id	=   $(this).attr('id');
+					$('#btnNo').text("Batal");
+					$('#btnYes').text("Ya, Hapus");
+					$('#confirmModal').modal("show");
+				});
+
+				// Delete
+				$('#btnYes').click(function () {
+					$.ajax({
+						url: url.replace(":id", transaction_id),
+						beforeSend: function() {
+								$('#btnYes').text('Menghapus...');
+						},
+
+						success: function (res) {
+							setTimeout(function() {
+								$('#confirmModal').modal('hide');
+								$('#transactionTable').DataTable().ajax.reload();
+							});
+
+							toastr.options =
+							{
+								"closeButton" : true,
+								"progressBar" : false,
+								"preventDuplicates": true,
+								"timeOut": "3000",
+								"positionClass": "toast-top-center"
+							}
+							toastr.success(res.messages);
+						}
+					});
 				});
 			});
 		</script>

@@ -15,7 +15,7 @@ class HomeController extends Controller
         $data['title']  =   'Home';
 
         if (request()->ajax()) {
-            return datatables()->of(Transaction::orderBy('created_at', 'desc')->get())
+            return datatables()->of(Transaction::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->get())
                 ->addColumn('action', function($data) {
                     $button =   '<button type="button" id="' . $data->id . '" class="btnEdit btn btn-warning mr-1">Edit</button>';
                     $button .=   '<button type="button" id="' . $data->id . '" class="btnDelete btn btn-danger ml-1">Hapus</button>';

@@ -38,4 +38,7 @@ Route::middleware(['auth'])->group(function () {
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/store', [TransactionController::class, 'store'])->name('transaction.store');
+    Route::get('/show/{id}', [TransactionController::class, 'show'])->name('transaction.show');
+    Route::post('/update', [TransactionController::class, 'update'])->name('transaction.update');
+    Route::get('/delete/{id}', [TransactionController::class, 'delete'])->name('transaction.delete');
 });
