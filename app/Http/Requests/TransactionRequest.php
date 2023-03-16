@@ -24,10 +24,12 @@ class TransactionRequest extends FormRequest
     public function rules()
     {
         return [
-            'date'  =>  'required|date',
-            'title' =>  'required|max:255',
-            'type'  =>  'required|in:0,1',
-            'total' =>  'required|digits_between:1,11'
+            'date'      =>  'required|date',
+            'title'     =>  'required|max:255',
+            'type'      =>  'required|in:0,1',
+            'total'     =>  'required|digits_between:1,11',
+            'invoice'   =>  'max:5120',
+            'invoice.*' =>  'mimes:jpg,jpeg,png',
         ];
     }
 
@@ -42,6 +44,8 @@ class TransactionRequest extends FormRequest
             'type.in'           =>  'Tipe tidak valid',
             'total.required'    =>  'Total wajib diisi',
             'total.in'          =>  'Total 1 - 11 angka',
+            'invoice.max'       =>  'Invoice maksimal 5 Mb',
+            'invoice.mimes'     =>  'Invoice hanya boleh format jpg, jpeg, atau png',
         ];
     }
 }

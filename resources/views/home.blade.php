@@ -73,6 +73,7 @@
 							<thead>
 								<tr>
 									<th>No.</th>
+									<th>Invoice</th>
 									<th>Tanggal</th>
 									<th>Judul</th>
 									<th>Tipe</th>
@@ -129,6 +130,12 @@
 											<label>Total (Rp.)</label>
 											<input type="text" name="total" id="total" class="form-control" placeholder="Total">
 											<span class="text-danger" id="total_error"></span>
+										</div>
+
+										<div class="form-group">
+											<label>Invoice</label>
+											<input type="file" name="invoice" id="invoice" class="form-control-file">
+											<span class="text-danger" id="invoice_error"></span>
 										</div>
 									</div>
 
@@ -190,6 +197,10 @@
 							searchable: false
 						},
 						{
+							data: 'invoice',
+							name: 'invoice'
+						},
+						{
 							data: 'date',
 							name: 'date'
 						},
@@ -221,22 +232,26 @@
 						},
 						{
 							targets: 1,
-							width: '10%'
+							className: 'text-center',
 						},
 						{
 							targets: 2,
-							width: '25%'
-						},
-						{
-							targets: 3,
-							width: '10%'
-						},
-						{
-							targets: 4,
 							width: '15%'
 						},
 						{
+							targets: 3,
+							width: '25%'
+						},
+						{
+							targets: 4,
+							width: '10%'
+						},
+						{
 							targets: 5,
+							width: '15%'
+						},
+						{
+							targets: 6,
 							className: 'text-center',
 							width: '15%'
 						}
@@ -270,6 +285,7 @@
 							$('#type').val(html.data.type);
 							$('#title').val(html.data.title);
 							$('#total').val(html.data.total);
+							$('#invoice').text(html.data.invoice);
 						}
 					});
 				});
@@ -283,6 +299,7 @@
 						$('#type_error').text();
 						$('#title_error').text();
 						$('#total_error').text();
+						$('#invoice_error').text();
 
 						$.ajax({
 							url: "{{ route('transaction.store') }}",
@@ -333,6 +350,7 @@
 						$('#type_error').text();
 						$('#title_error').text();
 						$('#total_error').text();
+						$('#invoice_error').text();
 
 						$.ajax({
 							url: "{{ route('transaction.update') }}",
